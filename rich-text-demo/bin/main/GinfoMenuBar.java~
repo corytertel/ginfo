@@ -1,0 +1,92 @@
+import javafx.geometry.Bounds;
+import javafx.scene.control.Menu;
+import javafx.scene.control.MenuBar;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.KeyCombination;
+
+public class GinfoMenuBar extends MenuBar {
+
+    public GinfoMenuBar(GinfoTextArea area) throws Exception {
+
+	Menu menuFile = new Menu("File");
+	MenuItem saveItem = new MenuItem("Save");
+	menuFile.getItems().add(saveItem);
+
+	Menu menuEdit = new Menu("Edit");
+
+	MenuItem beginningItem = new MenuItem("Beginning of Line");
+	beginningItem.setAccelerator(KeyCombination.valueOf("ctrl+a"));
+	beginningItem.setOnAction(e -> {
+		int caretPos = area.getCaretPosition();
+		double iniPosX = area.getCaretBounds().orElseThrow().getMinX();
+		double movePosX = iniPosX;
+
+		while(caretPos != 0) {
+		    area.moveTo(caretPos - 1);
+		    movePosX = area.getCaretBounds().orElseThrow().getMinX();
+
+		    if(movePosX > iniPosX) {
+			area.moveTo(caretPos);
+			break;
+		    }
+		    else
+			caretPos--;
+		}
+	    });
+
+	MenuItem endLineItem = new MenuItem("End of Line");
+	endLineItem.setAccelerator(KeyCombination.valueOf("ctrl+e"));
+	endLineItem.setOnAction(e -> {
+		int caretPos = area.getCaretPosition();
+		if(caretPos != (area.getText().length() - 1)) {
+		    double iniPosX = area.getCaretBounds().orElseThrow().getMaxX();
+		    double movePosX = iniPosX;
+
+		    while(true) {
+			area.moveTo(caretPos + 1);
+			movePosX = area.getCaretBounds().orElseThrow().getMaxX();
+
+			if(movePosX < iniPosX) {
+			    area.moveTo(caretPos);
+			    break;
+			}
+			else
+			    caretPos++;
+		    }
+		}
+	    });
+
+	// MenuItem pageUpItem = new MenuItem("Page Up");
+	// pageUpItem.setAccelerator(KeyCombination.valueOf("alt+v"));
+	// pageUpItem.setOnAction(e -> {
+	// 	area.setScrollTop(area.getScrollTop() - area.getHeight());
+	//     });
+
+	// MenuItem pageDownItem = new MenuItem("Page Down");
+	// pageDownItem.setAccelerator(KeyCombination.valueOf("ctrl+v"));
+	// pageDownItem.setOnAction(e -> {
+	// 	area.setScrollTop(area.getScrollTop() + area.getHeight());
+	//     });
+
+	// menuEdit.getItems().addAll(beginningItem, pageUpItem, pageDownItem);
+	menuEdit.getItems().addAll(beginningItem, endLineItem);
+
+	Menu menuView = new Menu("View");
+
+	Menu menuOptions = new Menu("Options");
+
+	Menu menuHelp = new Menu("Help");
+
+	this.setUseSystemMenuBar(true);
+	this.getMenus().addAll(menuFile, menuEdit, menuView, menuOptions, menuHelp);
+
+	area.setEventDispatcher
+	    (new FilteringEventDispatcher
+	     (area.getEventDispatcher(),
+	      beginningItem.getAccelerator(),
+	      endLineItem.getAccelerator()
+	      // pageUpItem.getAccelerator(),
+	      // pageDownItem.getAccelerator()
+	      ));
+    }
+}

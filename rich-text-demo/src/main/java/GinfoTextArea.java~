@@ -1,0 +1,41 @@
+
+import org.fxmisc.richtext.InlineCssTextArea;
+
+public class GinfoTextArea extends InlineCssTextArea {
+
+    public GinfoTextArea(String string) {
+	super(string);
+    }
+
+    public void underlineRange(int from, int to, String color) {
+	String underline = "-rtfx-underline-color: " + color + "; " +
+	    "-rtfx-underline-width: 2.0;";
+	this.setStyle(from, to, underline);
+    }
+
+    public void boldRange(int from, int to, String color) {
+	String bold = "-rtfx-bold-color: " + color + ";";
+	this.setStyle(from, to, bold);
+    }
+
+
+    @Override
+    public void replaceText(int start, int end, String text) {
+	// String current = getText();
+	// // only insert if no new lines after insert position:
+	// if (! current.substring(start).contains("\n")) {
+	//     super.replaceText(start, end, text);
+	// }
+	return;
+    }
+
+    @Override
+    public void replaceSelection(String text) {
+	// String current = getText();
+	// int selectionStart = getSelection().getStart();
+	// if (! current.substring(selectionStart).contains("\n")) {
+	//     super.replaceSelection(text);
+	// }
+	return;
+    }
+}
